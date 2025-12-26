@@ -21,9 +21,6 @@ flutter_ios_podfile_setup
 target 'Runner' do
   # Add any plugin-specific pod configuration here.
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  
-  # Force GoogleUtilities to use version 8.0 or higher to resolve dependency conflicts
-  pod 'GoogleUtilities', '~> 8.0'
 end
 
 post_install do |installer|

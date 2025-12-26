@@ -252,39 +252,45 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-      if (googleAuth != null) {
-        final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth.accessToken,
-          idToken: googleAuth.idToken,
+      if (googleUser == null) {
+        // User canceled the sign-in
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Google Sign-In aborted by user.')),
         );
+        setState(() {
+          _isLoading = false;
+        });
+        return;
+      }
 
-        final UserCredential userCredential = await _auth.signInWithCredential(credential);
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-        final String? idToken = await userCredential.user?.getIdToken();
+      // For Firebase authentication with Google Sign-In v6.x
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
 
-        if (idToken != null) {
-          final result = await _apiService.firebaseLogin(idToken);
+      final UserCredential userCredential = await _auth.signInWithCredential(credential);
 
-          if (result['success']) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(result['message'])),
-            );
-            widget.onLoginSuccess();
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(result['message'])),
-            );
-          }
+      final String? idToken = await userCredential.user?.getIdToken();
+
+      if (idToken != null) {
+        final result = await _apiService.firebaseLogin(idToken);
+
+        if (result['success']) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(result['message'])),
+          );
+          widget.onLoginSuccess();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Failed to get Firebase ID token.')),
+            SnackBar(content: Text(result['message'])),
           );
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Google Sign-In aborted by user.')),
+          const SnackBar(content: Text('Failed to get Firebase ID token.')),
         );
       }
     } catch (e) {
