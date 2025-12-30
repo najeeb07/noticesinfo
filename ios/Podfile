@@ -18,6 +18,8 @@ require File.expand_path(File.join(flutter_root, 'packages', 'flutter_tools', 'b
 
 flutter_ios_podfile_setup
 
+use_modular_headers!
+
 target 'Runner' do
   # Add any plugin-specific pod configuration here.
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
