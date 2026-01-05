@@ -30,7 +30,17 @@ final GlobalKey<_MyAppState> myAppKey = GlobalKey<_MyAppState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  
+  // Initialize Firebase with error handling for iOS
+  try {
+    await Firebase.initializeApp();
+    print('Firebase initialized successfully');
+  } catch (e) {
+    print('Firebase initialization failed: $e');
+    // Continue app execution even if Firebase fails
+    // This allows the app to work on iOS without GoogleService-Info.plist
+  }
+  
   final prefs = await SharedPreferences.getInstance();
   final String? savedLangCode = prefs.getString('language_code');
   Locale? initialLocale;

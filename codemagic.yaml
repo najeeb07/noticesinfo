@@ -12,10 +12,16 @@ workflows:
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
+        CERTIFICATE_PRIVATE_KEY: $CERTIFICATE_PRIVATE_KEY
       xcode: 15.0 # Xcode version
       cocoapods: default
       flutter: stable
     scripts:
+      - name: Fetch signing files for App Store
+        script: |
+          app-store-connect fetch-signing-files "$CM_BUILD_BUNDLE_IDENTIFIER" \
+            --type IOS_APP_STORE \
+            --create
       - name: Set up code signing settings on Xcode project
         script: |
           xcode-project use-profiles
