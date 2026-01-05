@@ -9,6 +9,8 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.noticesinfo.app
+      groups:
+        - firebase_config  # Add this group in Codemagic UI with GOOGLE_SERVICE_INFO_PLIST variable
       vars:
         XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
@@ -17,6 +19,11 @@ workflows:
       cocoapods: default
       flutter: stable
     scripts:
+      - name: Setup GoogleService-Info.plist
+        script: |
+          echo "Decoding GoogleService-Info.plist from environment variable..."
+          echo $GOOGLE_SERVICE_INFO_PLIST | base64 --decode > $CM_BUILD_DIR/ios/Runner/GoogleService-Info.plist
+          echo "GoogleService-Info.plist has been set up successfully"
       - name: Fetch signing files for App Store
         script: |
           app-store-connect fetch-signing-files "$CM_BUILD_BUNDLE_IDENTIFIER" \
@@ -62,12 +69,18 @@ workflows:
         - keystore_reference
       groups:
         - google_play
+        - firebase_config  # Add this group in Codemagic UI with GOOGLE_SERVICES_JSON variable
       vars:
         PACKAGE_NAME: "com.noticesinfo.app"
       flutter: stable
       xcode: latest
       cocoapods: default
     scripts:
+      - name: Setup google-services.json
+        script: |
+          echo "Decoding google-services.json from environment variable..."
+          echo $GOOGLE_SERVICES_JSON | base64 --decode > $CM_BUILD_DIR/android/app/google-services.json
+          echo "google-services.json has been set up successfully"
       - name: Set up local.properties
         script: |
           echo "flutter.sdk=$HOME/programs/flutter" > "$CM_BUILD_DIR/android/local.properties"
