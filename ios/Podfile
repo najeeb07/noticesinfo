@@ -32,29 +32,4 @@ post_install do |installer|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
     end
   end
-  
-  # Ensure GoogleService-Info.plist is added to the project
-  project_path = 'Runner.xcodeproj'
-  project = Xcodeproj::Project.open(project_path)
-  
-  # Check if GoogleService-Info.plist already exists in project
-  firebase_config_file = 'GoogleService-Info.plist'
-  firebase_config_path = File.join('Runner', firebase_config_file)
-  
-  unless project.files.find { |file| file.path == firebase_config_path }
-    puts "Adding GoogleService-Info.plist to Xcode project..."
-    
-    # Add file reference
-    runner_group = project.main_group.find_subpath('Runner', true)
-    file_ref = runner_group.new_reference(firebase_config_path)
-    
-    # Add to resources build phase
-    target = project.targets.first
-    target.add_resources([file_ref])
-    
-    project.save
-    puts "✅ GoogleService-Info.plist added successfully"
-  else
-    puts "✅ GoogleService-Info.plist already in project"
-  end
 end
