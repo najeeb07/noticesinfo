@@ -23,8 +23,14 @@ class _LoginScreenState extends State<LoginScreen> {
   String _fullPhoneNumber = ''; // To store the E.164 formatted phone number
   final ApiService _apiService = ApiService();
   bool _isLoading = false;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  GoogleSignIn? _googleSignIn;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  
+  // Lazy initialization of GoogleSignIn to avoid early native plugin init issues on iOS 26
+  GoogleSignIn get googleSignIn {
+    _googleSignIn ??= GoogleSignIn();
+    return _googleSignIn!;
+  }
 
   String _verificationId = '';
   String _smsCode = '';
@@ -250,7 +256,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
       if (googleUser == null) {
         // User canceled the sign-in

@@ -8,8 +8,10 @@ import FirebaseCore
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    // Initialize Firebase BEFORE Flutter plugins
-    FirebaseApp.configure()
+    // Initialize Firebase with error handling for iOS 26 beta compatibility
+    if FirebaseApp.app() == nil {
+      FirebaseApp.configure()
+    }
     
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
