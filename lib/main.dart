@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:firebase_core/firebase_core.dart';
+// TEMPORARILY DISABLED FOR iOS 26 - LOGIN WILL NOT WORK
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,8 +28,8 @@ final GlobalKey<_MyAppState> myAppKey = GlobalKey<_MyAppState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // ✅ SINGLE Firebase initialization (correct)
-  await Firebase.initializeApp();
+  // TEMPORARILY DISABLED FOR iOS 26 - LOGIN WILL NOT WORK
+  // await Firebase.initializeApp();
 
   final prefs = await SharedPreferences.getInstance();
   final String? savedLangCode = prefs.getString('language_code');
