@@ -16,7 +16,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the item product name, while build-number is used as
 # the item product version.
-version: 1.0.14+15
+version: 1.0.15+16
 
 environment:
   sdk: '>=3.2.6 <4.0.0'
@@ -53,7 +53,7 @@ dependencies:
   geolocator: ^11.0.0
   intl_phone_field: ^3.2.0
   package_info_plus: ^8.0.0
-  flutter_secure_storage: ^9.0.0
+  flutter_secure_storage: ^10.0.0  # Updated to fix iOS 18/26 crash
   google_cloud_translation: ^0.0.4 # Downgraded as per suggestion
   provider: ^6.1.1 # Add provider package
 
