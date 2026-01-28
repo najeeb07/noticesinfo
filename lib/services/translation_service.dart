@@ -1,24 +1,24 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_cloud_translation/google_cloud_translation.dart';
 import 'package:flutter/foundation.dart'; // Import for ChangeNotifier and kDebugMode
 import 'package:flutter/services.dart' show PlatformException;
 
 class TranslationService extends ChangeNotifier {
   static const String _apiKeyStorageKey = 'google_translate_api_key';
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
-  Translation? _translator; // Changed GoogleCloudTranslation to Translation
+  Translation? _translator;
 
   Future<void> initialize(String? apiKey) async {
+    final prefs = await SharedPreferences.getInstance();
     if (apiKey != null && apiKey.isNotEmpty) {
-      await _secureStorage.write(key: _apiKeyStorageKey, value: apiKey);
-      _translator = Translation(apiKey: apiKey); // Changed GoogleCloudTranslation to Translation
+      await prefs.setString(_apiKeyStorageKey, apiKey);
+      _translator = Translation(apiKey: apiKey);
     } else {
-      final storedApiKey = await _secureStorage.read(key: _apiKeyStorageKey);
+      final storedApiKey = prefs.getString(_apiKeyStorageKey);
       if (storedApiKey != null && storedApiKey.isNotEmpty) {
-        _translator = Translation(apiKey: storedApiKey); // Changed GoogleCloudTranslation to Translation
+        _translator = Translation(apiKey: storedApiKey);
       } else {
         if (kDebugMode) {
-          print('Warning: Google Translate API key not provided and not found in secure storage.');
+          print('Warning: Google Translate API key not provided and not found in shared preferences.');
         }
         _translator = null;
       }
@@ -41,7 +41,7 @@ class TranslationService extends ChangeNotifier {
 
     try {
       final response = await _translator!.translate(
-        text: text, // Changed to named argument
+        text: text,
         to: targetLanguage,
       );
       return response.translatedText; // Access translated text via .text property
@@ -60,19 +60,22 @@ class TranslationService extends ChangeNotifier {
 
   // Method to manually set the API key if it needs to be updated or provided dynamically
   Future<void> setApiKey(String apiKey) async {
-    await _secureStorage.write(key: _apiKeyStorageKey, value: apiKey);
-    _translator = Translation(apiKey: apiKey); // Changed GoogleCloudTranslation to Translation
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_apiKeyStorageKey, apiKey);
+    _translator = Translation(apiKey: apiKey);
     notifyListeners();
   }
 
   // Method to retrieve the stored API key
   Future<String?> getApiKey() async {
-    return await _secureStorage.read(key: _apiKeyStorageKey);
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_apiKeyStorageKey);
   }
 
   // Method to clear the API key
   Future<void> clearApiKey() async {
-    await _secureStorage.delete(key: _apiKeyStorageKey);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_apiKeyStorageKey);
     _translator = null;
   }
 }
